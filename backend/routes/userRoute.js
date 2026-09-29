@@ -14,6 +14,7 @@ import {
 } from "../controller/userController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
+import { singleUpload } from "../middleware/multer.js";
 
 const router = express.Router();
 
@@ -37,7 +38,7 @@ router.post("/change-password", changePassword);
 
 router.get("/profile", authMiddleware, getProfile);
 
-router.put("/update-profile", authMiddleware, updateProfile);
+router.put("/update-profile", authMiddleware, singleUpload, updateProfile);
 
 router.post("/logout", authMiddleware, logoutUser);
 
