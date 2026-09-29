@@ -17,7 +17,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://quickbite.vercel.app"],
+    origin: ["http://localhost:5173", "https://quick-bite-woad.vercel.app"],
     credentials: true,
   }),
 );
