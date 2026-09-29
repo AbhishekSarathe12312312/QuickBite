@@ -58,7 +58,7 @@ const Navbar = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:8000/api/cart", {
+        const response = await axios.get("${import.meta.env.VITE_API_URL}/api/cart", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -130,7 +130,7 @@ const Navbar = () => {
 
       if (token) {
         await axios.post(
-          "http://localhost:8000/api/user/logout",
+          "${import.meta.env.VITE_API_URL}/api/user/logout",
           {},
           {
             headers: {

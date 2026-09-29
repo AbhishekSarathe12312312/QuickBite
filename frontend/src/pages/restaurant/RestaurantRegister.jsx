@@ -37,7 +37,7 @@ const RestaurantRegister = () => {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:8000/api/user/restaurant/register",
+        "${import.meta.env.VITE_API_URL}/api/user/restaurant/register",
         {
           name: name,
           email: email,

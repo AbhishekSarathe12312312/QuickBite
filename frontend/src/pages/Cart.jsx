@@ -25,7 +25,7 @@ const Cart = () => {
 
       // Create Razorpay Order
       const response = await axios.post(
-        "http://localhost:8000/api/order/create-order",
+        "${import.meta.env.VITE_API_URL}/api/order/create-order",
         {},
         {
           headers: {
@@ -64,7 +64,7 @@ const Cart = () => {
 
             // Verify payment on backend
             const verifyResponse = await axios.post(
-              "http://localhost:8000/api/order/verify-payment",
+              "${import.meta.env.VITE_API_URL}/api/order/verify-payment",
               {
                 razorpay_order_id:
                   paymentResponse.razorpay_order_id,
@@ -138,7 +138,7 @@ const Cart = () => {
   const fetchCart = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/cart",
+        "${import.meta.env.VITE_API_URL}/api/cart",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -171,7 +171,7 @@ const Cart = () => {
 
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/cart/update",
+        "${import.meta.env.VITE_API_URL}/api/cart/update",
         {
           foodId,
           quantity,
@@ -204,7 +204,7 @@ const Cart = () => {
   const removeItem = async (foodId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/cart/remove/${foodId}`,
+        `${import.meta.env.VITE_API_URL}/api/cart/remove/${foodId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -235,7 +235,7 @@ const Cart = () => {
   const clearCart = async () => {
     try {
       const response = await axios.delete(
-        "http://localhost:8000/api/cart/clear",
+        "${import.meta.env.VITE_API_URL}/api/cart/clear",
         {
           headers: {
             Authorization: `Bearer ${token}`,

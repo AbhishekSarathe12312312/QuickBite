@@ -55,7 +55,7 @@ const AddFood = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:8000/api/food/addFood",
+        "${import.meta.env.VITE_API_URL}/api/food/addFood",
         formData,
         {
           headers: {

@@ -150,7 +150,7 @@ const UpdateFood = () => {
       });
 
       const response = await axios.put(
-        `http://localhost:8000/api/food/updateFood/${food._id}`,
+        `${import.meta.env.VITE_API_URL}/api/food/updateFood/${food._id}`,
         formData,
         {
           headers: {

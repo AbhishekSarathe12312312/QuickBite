@@ -45,7 +45,7 @@ const GetSingleFood = () => {
         setLoading(true);
 
         const response = await axios.get(
-          `http://localhost:8000/api/food/getSingleFood/${foodId}`,
+          `${import.meta.env.VITE_API_URL}/api/food/getSingleFood/${foodId}`,
         );
 
         if (response.data.success) {
@@ -87,7 +87,7 @@ const GetSingleFood = () => {
       setCartLoading(true);
 
       const response = await axios.post(
-        "http://localhost:8000/api/cart/add",
+        "${import.meta.env.VITE_API_URL}/api/cart/add",
         {
           foodId: food._id,
         },
