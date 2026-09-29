@@ -13,7 +13,7 @@ const Login = () => {
   const getProfile = async (token) => {
     try {
       const response = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/user/profile",
+        `${import.meta.env.VITE_API_URL}/api/user/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ const Login = () => {
       setLoading(true);
 
       const response = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/user/login",
+        `${import.meta.env.VITE_API_URL}/api/user/login`,
         {
           email,
           password,

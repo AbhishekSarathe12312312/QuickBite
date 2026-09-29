@@ -44,7 +44,7 @@ const ForgotPassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/user/forgot-password",
+        `${import.meta.env.VITE_API_URL}/api/user/forgot-password`,
         {
           email: email.trim(),
         },
@@ -79,7 +79,7 @@ const ForgotPassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/user/verify-forgot-password-otp",
+        `${import.meta.env.VITE_API_URL}/api/user/verify-forgot-password-otp`,
         {
           email: email.trim(),
           otp,
@@ -134,7 +134,7 @@ const ForgotPassword = () => {
       setLoading(true);
 
       const res = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/user/change-password",
+        `${import.meta.env.VITE_API_URL}/api/user/change-password`,
         {
           email: email.trim(),
           resetToken,

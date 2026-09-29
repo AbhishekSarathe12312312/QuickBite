@@ -31,7 +31,7 @@ const GetAllFoods = () => {
       }
 
       const response = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/food/getAllFoods",
+        `${import.meta.env.VITE_API_URL}/api/food/getAllFoods`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,7 +69,7 @@ const GetAllFoods = () => {
       setCartLoading(foodId);
 
       const response = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/cart/add",
+        `${import.meta.env.VITE_API_URL}/api/cart/add`,
         {
           foodId,
         },

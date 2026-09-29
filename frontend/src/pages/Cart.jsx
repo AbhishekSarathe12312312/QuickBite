@@ -25,7 +25,7 @@ const Cart = () => {
 
       // Create Razorpay Order
       const response = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/order/create-order",
+        `${import.meta.env.VITE_API_URL}/api/order/create-order`,
         {},
         {
           headers: {
@@ -64,7 +64,7 @@ const Cart = () => {
 
             // Verify payment on backend
             const verifyResponse = await axios.post(
-              "${import.meta.env.VITE_API_URL}/api/order/verify-payment",
+              `${import.meta.env.VITE_API_URL}/api/order/verify-payment`,
               {
                 razorpay_order_id:
                   paymentResponse.razorpay_order_id,
@@ -138,7 +138,7 @@ const Cart = () => {
   const fetchCart = async () => {
     try {
       const response = await axios.get(
-        "${import.meta.env.VITE_API_URL}/api/cart",
+        `${import.meta.env.VITE_API_URL}/api/cart`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -171,7 +171,7 @@ const Cart = () => {
 
     try {
       const response = await axios.put(
-        "${import.meta.env.VITE_API_URL}/api/cart/update",
+        `${import.meta.env.VITE_API_URL}/api/cart/update`,
         {
           foodId,
           quantity,
@@ -235,7 +235,7 @@ const Cart = () => {
   const clearCart = async () => {
     try {
       const response = await axios.delete(
-        "${import.meta.env.VITE_API_URL}/api/cart/clear",
+        `${import.meta.env.VITE_API_URL}/api/cart/clear`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
