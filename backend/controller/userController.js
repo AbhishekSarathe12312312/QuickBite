@@ -307,61 +307,6 @@ export const logoutUser = async (req, res) => {
   }
 };
 
-export const registerRestaurant = async (req, res) => {
-  try {
-    const { name, email, phone, password } = req.body;
-    if (!name || !email || !phone || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-    const normalizedEmail = email.toLowerCase().trim();
-    const existingEmail = await User.findOne({ email: normalizedEmail });
-    if (existingEmail) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already registered",
-      });
-    }
-    const existingPhone = await User.findOne({ phone });
-    if (existingPhone) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number already registered",
-      });
-    }
-    const passwordHash = await bcrypt.hash(password, 10);
-    const otp = crypto.randomInt(100000, 1000000).toString();
-    const otpHash = await bcrypt.hash(otp, 10);
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-    await OTP.deleteMany({
-      email: normalizedEmail,
-    });
-    await OTP.create({
-      name,
-      email: normalizedEmail,
-      phone,
-      passwordHash,
-      role: "restaurant",
-      otpHash,
-      expiresAt,
-      attempts: 0,
-    });
-    await sendOTPEmail(normalizedEmail, otp);
-    return res.status(200).json({
-      success: true,
-      message: "Restaurant OTP sent successfully",
-    });
-  } catch (error) {
-    console.error("Restaurant Registration Error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-};
-
 export const updateProfile = async (req, res) => {
   try {
     const { name, phone } = req.body;
@@ -578,9 +523,6 @@ export const verifyForgotPasswordOTP = async (req, res) => {
 
     await otpRecord.save();
 
-    console.log("RESET TOKEN GENERATED:", resetToken);
-    console.log("RESET TOKEN HASH SAVED:", resetTokenHash);
-
     return res.status(200).json({
       success: true,
       message: "OTP verified successfully",
@@ -599,10 +541,6 @@ export const verifyForgotPasswordOTP = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { email, resetToken, newPassword, confirmPassword } = req.body;
-
-    console.log("CHANGE PASSWORD REQUEST");
-    console.log("EMAIL:", email);
-    console.log("RESET TOKEN RECEIVED:", resetToken);
 
     if (!email || !resetToken || !newPassword || !confirmPassword) {
       return res.status(400).json({
@@ -632,16 +570,11 @@ export const changePassword = async (req, res) => {
       .update(resetToken)
       .digest("hex");
 
-    console.log("EMAIL NORMALIZED:", normalizedEmail);
-    console.log("RESET TOKEN HASH:", resetTokenHash);
-
     const otpRecord = await ForgotPasswordOTP.findOne({
       email: normalizedEmail,
       resetTokenHash,
       otpVerified: true,
     });
-
-    console.log("OTP RECORD:", otpRecord);
 
     if (!otpRecord) {
       return res.status(400).json({
@@ -692,6 +625,86 @@ export const changePassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Change Password Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+export const registerRestaurant = async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+
+    // =========================
+    // Validate Fields
+    // =========================
+    if (!name || !email || !phone || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // =========================
+    // Normalize Email
+    // =========================
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // =========================
+    // Check Existing Email
+    // =========================
+    const existingEmail = await User.findOne({
+      email: normalizedEmail,
+    });
+
+    if (existingEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered",
+      });
+    }
+
+    // =========================
+    // Check Existing Phone
+    // =========================
+    const existingPhone = await User.findOne({
+      phone,
+    });
+
+    if (existingPhone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number already registered",
+      });
+    }
+
+    // =========================
+    // Hash Password
+    // =========================
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // =========================
+    // Create Restaurant
+    // =========================
+    await User.create({
+      name,
+      email: normalizedEmail,
+      phone,
+      password: passwordHash,
+      role: "restaurant",
+    });
+
+    // =========================
+    // Response
+    // =========================
+    return res.status(200).json({
+      success: true,
+      message: "Restaurant Registered Successfully",
+    });
+  } catch (error) {
+    console.error("Restaurant Registration Error:", error);
 
     return res.status(500).json({
       success: false,

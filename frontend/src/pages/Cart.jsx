@@ -8,7 +8,7 @@ const Cart = () => {
   const [cart, setCart] = useState({ items: [] });
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const navigate = useNavigate();
 
   // =========================
@@ -16,7 +16,7 @@ const Cart = () => {
   // =========================
   const handleCheckout = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (!token) {
         toast.error("Please login first");
@@ -60,20 +60,16 @@ const Cart = () => {
         // =========================
         handler: async function (paymentResponse) {
           try {
-            console.log("Payment Response:", paymentResponse);
 
             // Verify payment on backend
             const verifyResponse = await axios.post(
               `${import.meta.env.VITE_API_URL}/api/order/verify-payment`,
               {
-                razorpay_order_id:
-                  paymentResponse.razorpay_order_id,
+                razorpay_order_id: paymentResponse.razorpay_order_id,
 
-                razorpay_payment_id:
-                  paymentResponse.razorpay_payment_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
 
-                razorpay_signature:
-                  paymentResponse.razorpay_signature,
+                razorpay_signature: paymentResponse.razorpay_signature,
               },
               {
                 headers: {
@@ -102,8 +98,7 @@ const Cart = () => {
             );
 
             toast.error(
-              error.response?.data?.message ||
-                "Payment verification failed",
+              error.response?.data?.message || "Payment verification failed",
             );
           }
         },
@@ -125,10 +120,7 @@ const Cart = () => {
         error.response?.data?.message || error.message,
       );
 
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to start checkout",
-      );
+      toast.error(error.response?.data?.message || "Failed to start checkout");
     }
   };
 
@@ -150,10 +142,7 @@ const Cart = () => {
         setCart(response.data.cart);
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to load cart",
-      );
+      toast.error(error.response?.data?.message || "Failed to load cart");
     } finally {
       setLoading(false);
     }
@@ -186,15 +175,10 @@ const Cart = () => {
       if (response.data.success) {
         setCart(response.data.cart);
 
-        window.dispatchEvent(
-          new Event("cartChanged"),
-        );
+        window.dispatchEvent(new Event("cartChanged"));
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to update quantity",
-      );
+      toast.error(error.response?.data?.message || "Failed to update quantity");
     }
   };
 
@@ -217,15 +201,10 @@ const Cart = () => {
 
         toast.success("Food removed from cart");
 
-        window.dispatchEvent(
-          new Event("cartChanged"),
-        );
+        window.dispatchEvent(new Event("cartChanged"));
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to remove food",
-      );
+      toast.error(error.response?.data?.message || "Failed to remove food");
     }
   };
 
@@ -248,30 +227,19 @@ const Cart = () => {
 
         toast.success("Cart cleared");
 
-        window.dispatchEvent(
-          new Event("cartChanged"),
-        );
+        window.dispatchEvent(new Event("cartChanged"));
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to clear cart",
-      );
+      toast.error(error.response?.data?.message || "Failed to clear cart");
     }
   };
 
   // =========================
   // Calculate Total
   // =========================
-  const totalPrice = cart.items.reduce(
-    (total, item) => {
-      return (
-        total +
-        item.food.price * item.quantity
-      );
-    },
-    0,
-  );
+  const totalPrice = cart.items.reduce((total, item) => {
+    return total + item.food.price * item.quantity;
+  }, 0);
 
   // =========================
   // Loading
@@ -279,7 +247,11 @@ const Cart = () => {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-950 text-white">
-        Loading cart...
+        <div className="text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-700 border-t-orange-500" />
+
+          <p className="mt-4 text-gray-400">Loading cart...</p>
+        </div>
       </div>
     );
   }
@@ -287,20 +259,12 @@ const Cart = () => {
   // =========================
   // Empty Cart
   // =========================
-  if (
-    !cart.items ||
-    cart.items.length === 0
-  ) {
+  if (!cart.items || cart.items.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-950 px-4 text-white">
-        <ShoppingCart
-          size={70}
-          className="mb-5 text-gray-600"
-        />
+        <ShoppingCart size={70} className="mb-5 text-gray-600" />
 
-        <h1 className="text-3xl font-bold">
-          Your Cart is Empty
-        </h1>
+        <h1 className="text-3xl font-bold">Your Cart is Empty</h1>
 
         <p className="mt-2 text-gray-400">
           Add some delicious food to your cart.
@@ -313,15 +277,12 @@ const Cart = () => {
   // Cart UI
   // =========================
   return (
-    <div className="min-h-screen bg-gray-950 px-4 py-10 text-white">
+    <div className="mt-14 min-h-screen bg-gray-950 px-4 py-10 text-white">
       <div className="mx-auto max-w-6xl">
-
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">
-              Your Cart
-            </h1>
+            <h1 className="text-3xl font-bold">Your Cart</h1>
 
             <p className="mt-1 text-gray-400">
               Review your items before checkout
@@ -338,7 +299,6 @@ const Cart = () => {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-
           {/* Cart Items */}
           <div className="space-y-4 lg:col-span-2">
             {cart.items.map((item) => (
@@ -346,13 +306,10 @@ const Cart = () => {
                 key={item.food._id}
                 className="flex flex-col gap-4 rounded-2xl border border-gray-800 bg-gray-900 p-4 sm:flex-row sm:items-center"
               >
-
                 {/* Image */}
                 <div className="h-28 w-full overflow-hidden rounded-xl sm:h-24 sm:w-24">
                   <img
-                    src={
-                      item.food.images?.[0]?.url
-                    }
+                    src={item.food.images?.[0]?.url}
                     alt={item.food.name}
                     className="h-full w-full object-cover"
                   />
@@ -360,9 +317,7 @@ const Cart = () => {
 
                 {/* Food Details */}
                 <div className="flex-1">
-                  <h2 className="text-lg font-semibold">
-                    {item.food.name}
-                  </h2>
+                  <h2 className="text-lg font-semibold">{item.food.name}</h2>
 
                   <p className="mt-1 text-sm text-gray-400">
                     {item.food.category}
@@ -375,14 +330,10 @@ const Cart = () => {
 
                 {/* Quantity */}
                 <div className="flex items-center gap-3">
-
                   <button
                     type="button"
                     onClick={() =>
-                      updateQuantity(
-                        item.food._id,
-                        item.quantity - 1,
-                      )
+                      updateQuantity(item.food._id, item.quantity - 1)
                     }
                     className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-800 transition hover:bg-gray-700"
                   >
@@ -396,37 +347,27 @@ const Cart = () => {
                   <button
                     type="button"
                     onClick={() =>
-                      updateQuantity(
-                        item.food._id,
-                        item.quantity + 1,
-                      )
+                      updateQuantity(item.food._id, item.quantity + 1)
                     }
                     className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-800 transition hover:bg-gray-700"
                   >
                     <Plus size={16} />
                   </button>
-
                 </div>
 
                 {/* Item Total */}
                 <div className="min-w-20 text-right">
-
                   <p className="font-bold">
-                    ₹
-                    {item.food.price *
-                      item.quantity}
+                    ₹{item.food.price * item.quantity}
                   </p>
 
                   <button
                     type="button"
-                    onClick={() =>
-                      removeItem(item.food._id)
-                    }
+                    onClick={() => removeItem(item.food._id)}
                     className="mt-2 text-red-400 transition hover:text-red-300"
                   >
                     <Trash2 size={18} />
                   </button>
-
                 </div>
               </div>
             ))}
@@ -434,31 +375,21 @@ const Cart = () => {
 
           {/* Summary */}
           <div className="h-fit rounded-2xl border border-gray-800 bg-gray-900 p-6">
-
-            <h2 className="text-xl font-bold">
-              Order Summary
-            </h2>
+            <h2 className="text-xl font-bold">Order Summary</h2>
 
             <div className="mt-6 space-y-4 border-b border-gray-800 pb-5">
-
               <div className="flex justify-between text-gray-400">
                 <span>Items</span>
 
                 <span>
-                  {cart.items.reduce(
-                    (total, item) =>
-                      total + item.quantity,
-                    0,
-                  )}
+                  {cart.items.reduce((total, item) => total + item.quantity, 0)}
                 </span>
               </div>
 
               <div className="flex justify-between text-gray-400">
                 <span>Subtotal</span>
 
-                <span>
-                  ₹{totalPrice}
-                </span>
+                <span>₹{totalPrice}</span>
               </div>
 
               <div className="flex justify-between text-gray-400">
@@ -466,15 +397,12 @@ const Cart = () => {
 
                 <span>₹0</span>
               </div>
-
             </div>
 
             <div className="mt-5 flex justify-between text-lg font-bold">
               <span>Total</span>
 
-              <span className="text-orange-400">
-                ₹{totalPrice}
-              </span>
+              <span className="text-orange-400">₹{totalPrice}</span>
             </div>
 
             {/* Checkout Button */}
@@ -485,7 +413,6 @@ const Cart = () => {
             >
               Proceed to Checkout
             </button>
-
           </div>
         </div>
       </div>

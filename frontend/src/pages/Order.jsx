@@ -16,7 +16,7 @@ const Order = () => {
 
   const fetchOrder = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (!token) {
         toast.error("Please login first");
@@ -138,7 +138,7 @@ const Order = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 px-4 py-10 text-white">
+    <div className="min-h-screen bg-gray-950 px-4 py-10 text-white mt-14">
       <div className="mx-auto max-w-5xl">
 
         {/* Header */}

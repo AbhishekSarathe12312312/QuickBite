@@ -10,8 +10,6 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-
-  // Navbar scroll state
   const [showNavbar, setShowNavbar] = useState(true);
 
   // =========================
@@ -19,7 +17,7 @@ const Navbar = () => {
   // =========================
   useEffect(() => {
     const checkUser = () => {
-      const storedUser = localStorage.getItem("user");
+      const storedUser = sessionStorage.getItem("user");
 
       if (storedUser) {
         try {
@@ -27,8 +25,7 @@ const Navbar = () => {
         } catch (error) {
           console.error("Invalid user data:", error);
 
-          localStorage.removeItem("user");
-
+          sessionStorage.removeItem("user");
           setUser(null);
         }
       } else {
@@ -46,23 +43,26 @@ const Navbar = () => {
   }, []);
 
   // =========================
-  // Cart Count
+  // Cart Count - Customer Only
   // =========================
   useEffect(() => {
     const fetchCartCount = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
 
         if (!token || user?.role !== "customer") {
           setCartCount(0);
           return;
         }
 
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/cart`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/cart`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         if (response.data.success) {
           const items = response.data.cart?.items || [];
@@ -94,16 +94,11 @@ const Navbar = () => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Top of page → always show navbar
       if (currentScrollY <= 10) {
         setShowNavbar(true);
-      }
-      // Scrolling down → hide navbar
-      else if (currentScrollY > lastScrollY) {
+      } else if (currentScrollY > lastScrollY) {
         setShowNavbar(false);
-      }
-      // Scrolling up → show navbar
-      else if (currentScrollY < lastScrollY) {
+      } else if (currentScrollY < lastScrollY) {
         setShowNavbar(true);
       }
 
@@ -126,7 +121,7 @@ const Navbar = () => {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (token) {
         await axios.post(
@@ -140,10 +135,11 @@ const Navbar = () => {
         );
       }
 
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
 
       setUser(null);
+      setCartCount(0);
 
       window.dispatchEvent(new Event("authChanged"));
 
@@ -159,13 +155,15 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed left-0 top-0 z-50 w-full border-b border-gray-800 bg-[#0b0f19]/95 shadow-sm backdrop-blur-md transition-transform duration-300 ease-in-out ${
-        showNavbar ? "translate-y-0" : "-translate-y-full"
+      className={`fixed left-0 top-0 z-50 w-full border-b border-gray-800 bg-[#0b0f19] shadow-sm transition-transform duration-300 ease-in-out ${
+        showNavbar ? "translate-y-0" : "-translate-y-[110%]"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* LOGO */}
+          {/* =========================
+              LOGO
+          ========================= */}
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 shadow-md shadow-orange-200">
               <span className="text-xl">🍔</span>
@@ -176,9 +174,13 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* NAV LINKS */}
+          {/* =========================
+              NAV LINKS
+          ========================= */}
           <div className="hidden items-center gap-8 md:flex">
-            {/* CUSTOMER LINKS */}
+            {/* =========================
+                CUSTOMER NAVBAR
+            ========================= */}
             {user?.role === "customer" && (
               <>
                 <Link
@@ -201,6 +203,7 @@ const Navbar = () => {
                 >
                   My Orders
                 </Link>
+
                 <Link
                   to="/cart"
                   className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-gray-800 bg-[#131b2e] text-gray-300 transition hover:border-orange-500 hover:text-orange-500"
@@ -216,7 +219,9 @@ const Navbar = () => {
               </>
             )}
 
-            {/* RESTAURANT LINKS */}
+            {/* =========================
+                RESTAURANT NAVBAR
+            ========================= */}
             {user?.role === "restaurant" && (
               <>
                 <Link
@@ -234,22 +239,30 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/orders"
+                  to="/restaurant/add-food"
                   className="font-medium text-gray-300 transition hover:text-orange-500"
                 >
-                  Orders
+                  Add Food
                 </Link>
               </>
             )}
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* =========================
+              RIGHT SIDE
+          ========================= */}
           <div className="flex items-center gap-3">
+            {/* =========================
+                LOGGED-IN USER
+            ========================= */}
             {user ? (
               <>
-                {/* USER PROFILE */}
+                {/* PROFILE */}
                 <div className="mr-2 hidden items-center gap-2 rounded-full border border-gray-800 bg-[#131b2e] px-3 py-1.5 sm:flex">
-                  <Link to="/profile" className="flex items-center gap-2">
+                  <Link
+                    to="/restaurant/profile"
+                    className="flex items-center gap-2"
+                  >
                     <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-pink-900/40">
                       {user.profilePic ? (
                         <img
@@ -274,7 +287,7 @@ const Navbar = () => {
                 <button
                   onClick={handleLogout}
                   disabled={loading}
-                  className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
+                  className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 font-semibold text-white shadow-sm transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-300"
                 >
                   {loading ? (
                     <>
@@ -299,7 +312,7 @@ const Navbar = () => {
                   Login
                 </Link>
 
-                {/* REGISTER */}
+                {/* CUSTOMER REGISTER */}
                 <Link
                   to="/register"
                   className="hidden rounded-xl bg-pink-600 px-4 py-2.5 font-semibold text-white shadow-md shadow-pink-900/20 transition hover:bg-pink-700 sm:block"

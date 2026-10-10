@@ -22,9 +22,7 @@ const Login = () => {
       );
 
       if (response.data.success) {
-        console.log("Profile:", response.data.user);
-
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
       }
     } catch (error) {
       console.error(
@@ -57,20 +55,17 @@ const Login = () => {
 
         toast.success("Login successful");
 
-        console.log("Token:", token);
-        console.log("User:", response.data.user);
-
         // Save login data
-        localStorage.setItem("token", token);
+        sessionStorage.setItem("token", token);
 
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
 
         // Notify Navbar that user has logged in
         window.dispatchEvent(new Event("authChanged"));
 
         await getProfile(token);
 
-        navigate("/");
+        navigate("/customer-dashboard");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");

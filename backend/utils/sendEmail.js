@@ -7,8 +7,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendOTPEmail = async (email, otp) => {
   try {
-    console.log("Sending OTP to:", email);
-    console.log("OTP:", otp);
 
     const { data, error } = await resend.emails.send({
       from: "onboarding@resend.dev",
@@ -34,8 +32,7 @@ export const sendOTPEmail = async (email, otp) => {
       throw new Error(error.message);
     }
 
-    console.log("✅ EMAIL SENT");
-    console.log("Email ID:", data.id);
+
 
     return data;
   } catch (error) {

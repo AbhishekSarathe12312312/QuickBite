@@ -51,9 +51,6 @@ const GetSingleFood = () => {
         if (response.data.success) {
           setFood(response.data.food);
           setActiveImageIdx(0);
-
-          console.log("Food:", response.data.food);
-          console.log("Images:", response.data.food.images);
         }
       } catch (error) {
         console.error(
@@ -154,7 +151,7 @@ const GetSingleFood = () => {
   const hasImages = food.images?.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-950 px-3 py-5 text-white sm:px-4 lg:px-5">
+    <div className="min-h-screen bg-gray-950 px-3 py-5 text-white sm:px-4 lg:px-5 mt-14">
       <div className="mx-auto max-w-5xl">
         {/* BACK BUTTON */}
         <button
